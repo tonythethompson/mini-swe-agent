@@ -1,0 +1,38 @@
+{
+  "name": "mini-swe-agent-ts",
+  "version": "2.4.6",
+  "description": "TypeScript port of mini-SWE-agent - A simple AI software engineering agent",
+  "type": "module",
+  "license": "MIT",
+  "keywords": ["nlp", "agents", "code"],
+  "engines": { "node": ">=20" },
+  "bin": {
+    "mini": "dist/bin/mini.js",
+    "mini-swe-agent": "dist/bin/mini.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/bin/mini.js",
+    "dev": "tsx src/bin/mini.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "openai": "^4.77.0",
+    "zod": "^3.24.0",
+    "commander": "^12.1.0",
+    "nunjucks": "^3.2.4",
+    "yaml": "^2.7.0",
+    "dotenv": "^16.4.7",
+    "chalk": "^5.4.1",
+    "cli-progress": "^3.12.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3",
+    "tsx": "^4.19.2",
+    "vitest": "^2.1.9",
+    "@types/node": "^22.10.5",
+    "@types/nunjucks": "^3.2.6",
+    "@types/cli-progress": "^3.11.5"
+  }
+}
