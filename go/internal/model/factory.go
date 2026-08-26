@@ -57,6 +57,14 @@ func GetModel(config map[string]any) (core.Model, error) {
 		return NewDeterministicModel(cfg), nil
 	case "litellm", "":
 		return NewLitellmModel(cfg), nil
+	case "litellm_textbased":
+		return NewLitellmTextbasedModel(cfg), nil
+	case "openrouter":
+		return NewOpenRouterModel(cfg), nil
+	case "requesty":
+		return NewRequestyModel(cfg), nil
+	case "portkey":
+		return NewPortkeyModel(cfg), nil
 	default:
 		return nil, fmt.Errorf("unknown model class: %s", modelClass)
 	}

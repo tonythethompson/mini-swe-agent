@@ -3,6 +3,11 @@
 import os from "node:os";
 import { type Model } from "../index.js";
 import { LitellmModel } from "./litellm_model.js";
+import { LitellmTextbasedModel } from "./litellm_textbased_model.js";
+import { LitellmResponseModel } from "./litellm_response_model.js";
+import { OpenRouterModel, OpenRouterTextbasedModel } from "./openrouter_model.js";
+import { RequestyModel } from "./requesty_model.js";
+import { PortkeyModel } from "./portkey_model.js";
 import { DeterministicModel } from "./test_models.js";
 
 /** Global model statistics tracker with optional limits. */
@@ -42,6 +47,12 @@ export function getModelName(
 
 const MODEL_CLASS_MAPPING: Record<string, new (config?: Record<string, unknown>) => Model> = {
   litellm: LitellmModel,
+  litellm_textbased: LitellmTextbasedModel,
+  litellm_response: LitellmResponseModel,
+  openrouter: OpenRouterModel,
+  openrouter_textbased: OpenRouterTextbasedModel,
+  portkey: PortkeyModel,
+  requesty: RequestyModel,
   deterministic: DeterministicModel,
 };
 

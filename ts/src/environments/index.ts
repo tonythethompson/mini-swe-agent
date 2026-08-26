@@ -3,10 +3,12 @@
 import { type Environment } from "../index.js";
 import { LocalEnvironment } from "./local.js";
 import { DockerEnvironment } from "./docker.js";
+import { SingularityEnvironment } from "./singularity.js";
 
 const ENVIRONMENT_MAPPING: Record<string, new (config?: Record<string, unknown>) => Environment> = {
   docker: DockerEnvironment,
   local: LocalEnvironment,
+  singularity: SingularityEnvironment,
 };
 
 export function getEnvironmentClass(spec: string): new (config?: Record<string, unknown>) => Environment {
@@ -22,4 +24,4 @@ export function getEnvironment(config: Record<string, unknown>, defaultType = ""
   return new (getEnvironmentClass(envClass))(cfg);
 }
 
-export { LocalEnvironment, DockerEnvironment };
+export { LocalEnvironment, DockerEnvironment, SingularityEnvironment };

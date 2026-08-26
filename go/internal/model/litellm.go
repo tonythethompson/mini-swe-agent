@@ -15,6 +15,14 @@ import (
 	"github.com/tonythethompson/mini-swe-agent/go/internal/utils/jinja"
 )
 
+func ctx() context.Context {
+	return context.Background()
+}
+
+func float64Time() float64 {
+	return float64(time.Now().UnixNano()) / 1e9
+}
+
 const defaultObservationTemplate = "{% if output.exception_info %}<exception>{{output.exception_info}}</exception>\n{% endif %}" +
 	"<returncode>{{output.returncode}}</returncode>\n<output>\n{{output.output}}</output>"
 
@@ -55,15 +63,15 @@ var GlobalModelStatsInstance = NewGlobalModelStats()
 // LitellmModel is an OpenAI-compatible model.
 type LitellmModel struct {
 	Config          map[string]any
-	modelName       string
+	ModelName       string
 	modelKwargs     map[string]any
 	setCacheControl string
 	costTracking    string
-	formatErrorTmpl string
-	observationTmpl string
-	multimodalRegex string
-	client          *openai.Client
-	apiModelName    string
+	FormatErrorTmpl string
+	ObservationTmpl string
+	MultimodalRegex string
+	Client          *openai.Client
+	APIModelName    string
 }
 
 // NewLitellmModel creates a LitellmModel from config.
@@ -74,23 +82,23 @@ func NewLitellmModel(config map[string]any) *LitellmModel {
 }
 
 func (m *LitellmModel) init(config map[string]any) {
-	m.modelName = getStr(config, "model_name", "")
+	m.ModelName = getStr(config, "model_name", "")
 	m.modelKwargs = getMap(config, "model_kwargs")
 	m.setCacheControl = getStr(config, "set_cache_control", "")
 	m.costTracking = getStr(config, "cost_tracking", "default")
-	m.formatErrorTmpl = getStr(config, "format_error_template", defaultFormatErrorTemplate)
-	m.observationTmpl = getStr(config, "observation_template", defaultObservationTemplate)
-	m.multimodalRegex = getStr(config, "multimodal_regex", "")
+	m.FormatErrorTmpl = getStr(config, "format_error_template", defaultFormatErrorTemplate)
+	m.ObservationTmpl = getStr(config, "observation_template", defaultObservationTemplate)
+	m.MultimodalRegex = getStr(config, "multimodal_regex", "")
 
 	// Resolve provider
-	baseURL, apiKey := resolveProvider(m.modelName)
-	m.apiModelName = stripProvider(m.modelName)
+	baseURL, apiKey := resolveProvider(m.ModelName)
+	m.APIModelName = stripProvider(m.ModelName)
 
 	cfg := openai.DefaultConfig(apiKey)
 	if baseURL != "" {
 		cfg.BaseURL = baseURL
 	}
-	m.client = openai.NewClientWithConfig(cfg)
+	m.Client = openai.NewClientWithConfig(cfg)
 }
 
 func resolveProvider(modelName string) (baseURL, apiKey string) {
@@ -167,8 +175,8 @@ func (m *LitellmModel) Query(messages []exceptions.Message) (exceptions.Message,
 		},
 	}}
 
-	resp, err := m.client.CreateChatCompletion(context.Background(), openai.ChatCompletionRequest{
-		Model:    m.apiModelName,
+	resp, err := m.Client.CreateChatCompletion(context.Background(), openai.ChatCompletionRequest{
+		Model:    m.APIModelName,
 		Messages: apiMessages,
 		Tools:    tools,
 	})
@@ -176,7 +184,7 @@ func (m *LitellmModel) Query(messages []exceptions.Message) (exceptions.Message,
 		return exceptions.Message{}, err
 	}
 
-	cost := m.calculateCost(&resp)
+	cost := m.CalculateCost(&resp)
 	_ = GlobalModelStatsInstance.Add(cost)
 
 	// Parse actions
@@ -193,7 +201,7 @@ func (m *LitellmModel) Query(messages []exceptions.Message) (exceptions.Message,
 		})
 	}
 
-	actionList, err := actions.ParseToolcallActions(toolCalls, m.formatErrorTmpl, map[string]any{
+	actionList, err := actions.ParseToolcallActions(toolCalls, m.FormatErrorTmpl, map[string]any{
 		"finish_reason": string(choice.FinishReason),
 	})
 	if err != nil {
@@ -221,7 +229,7 @@ func (m *LitellmModel) Query(messages []exceptions.Message) (exceptions.Message,
 	return msg, nil
 }
 
-func (m *LitellmModel) calculateCost(resp *openai.ChatCompletionResponse) float64 {
+func (m *LitellmModel) CalculateCost(resp *openai.ChatCompletionResponse) float64 {
 	// In go-openai v1.x, Usage is a struct (not a pointer)
 	// Zero values mean no usage data
 	if resp.Usage.PromptTokens == 0 && resp.Usage.CompletionTokens == 0 {
@@ -255,19 +263,19 @@ func (m *LitellmModel) FormatObservationMessages(message exceptions.Message, out
 			}
 		}
 	}
-	return actions.FormatToolcallObservationMessages(actionList, outputs, m.observationTmpl, templateVars, m.multimodalRegex)
+	return actions.FormatToolcallObservationMessages(actionList, outputs, m.ObservationTmpl, templateVars, m.MultimodalRegex)
 }
 
 // GetTemplateVars returns the model config as template variables.
 func (m *LitellmModel) GetTemplateVars() map[string]any {
 	return map[string]any{
-		"model_name":            m.modelName,
+		"model_name":            m.ModelName,
 		"model_kwargs":          m.modelKwargs,
 		"set_cache_control":     m.setCacheControl,
 		"cost_tracking":         m.costTracking,
-		"format_error_template": m.formatErrorTmpl,
-		"observation_template":  m.observationTmpl,
-		"multimodal_regex":      m.multimodalRegex,
+		"format_error_template": m.FormatErrorTmpl,
+		"observation_template":  m.ObservationTmpl,
+		"multimodal_regex":      m.MultimodalRegex,
 	}
 }
 

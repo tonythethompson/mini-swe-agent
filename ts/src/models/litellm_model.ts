@@ -75,8 +75,8 @@ function stripProvider(modelName: string): string {
 
 export class LitellmModel implements Model {
   config: Record<string, unknown> = {};
-  private cfg!: LitellmModelConfig;
-  private client!: OpenAI;
+  protected cfg!: LitellmModelConfig;
+  protected client!: OpenAI;
 
   abortExceptions: (new (...args: any[]) => Error)[] = [Error]; // broad; specific ones checked in retry
 
@@ -106,7 +106,7 @@ export class LitellmModel implements Model {
     }
   }
 
-  private async _query(messages: Message[], kwargs: Record<string, unknown> = {}): Promise<OpenAI.ChatCompletion> {
+  protected async _query(messages: Message[], kwargs: Record<string, unknown> = {}): Promise<OpenAI.ChatCompletion> {
     const apiModel = stripProvider(this.cfg.model_name);
     return this.client.chat.completions.create({
       model: apiModel,
@@ -117,7 +117,7 @@ export class LitellmModel implements Model {
     });
   }
 
-  private _prepareMessagesForApi(messages: Message[]): Message[] {
+  protected _prepareMessagesForApi(messages: Message[]): Message[] {
     const prepared = messages.map((m) => {
       const { extra, ...rest } = m as Message & { extra?: unknown };
       return rest as Message;
@@ -159,7 +159,7 @@ export class LitellmModel implements Model {
     return message;
   }
 
-  private _calculateCost(response: OpenAI.ChatCompletion): { cost: number } {
+  protected _calculateCost(response: OpenAI.ChatCompletion): { cost: number } {
     // LiteLLM has a cost calculator; we approximate from usage if available.
     // Without a cost registry, we report 0 and warn unless ignore_errors.
     try {
@@ -184,7 +184,7 @@ export class LitellmModel implements Model {
     }
   }
 
-  private _parseActions(response: OpenAI.ChatCompletion): Action[] {
+  protected _parseActions(response: OpenAI.ChatCompletion): Action[] {
     const toolCalls = response.choices[0].message.tool_calls as unknown as
       | { id: string; function: { name: string; arguments: string } }[]
       | null;
