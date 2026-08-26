@@ -2,10 +2,10 @@
  * Ported from src/minisweagent/models/litellm_response_model.py
  *
  * Uses the OpenAI Responses API instead of chat completions. */
-import { type Message, type Action, type EnvOutput } from "../index.js";
+import { type Message, type Action, type EnvOutput } from "../exceptions.js";
 import { FormatError } from "../exceptions.js";
 import { LitellmModel } from "./litellm_model.js";
-import { GLOBAL_MODEL_STATS } from "./index.js";
+import { GLOBAL_MODEL_STATS } from "./global_stats.js";
 import {
   BASH_TOOL_RESPONSE_API,
   finishReasonFromResponsesApi,
@@ -138,3 +138,5 @@ export class LitellmResponseModel extends LitellmModel {
     };
   }
 }
+
+

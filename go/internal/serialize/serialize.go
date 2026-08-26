@@ -13,6 +13,14 @@ func IsUnset(v any) bool {
 	return ok
 }
 
+// UnsetIfEmpty returns Unset if s is empty, otherwise returns s.
+func UnsetIfEmpty(s string) any {
+	if s == "" {
+		return Unset
+	}
+	return s
+}
+
 // RecursiveMerge merges multiple maps recursively.
 // Later maps take precedence over earlier ones.
 // Nested maps are merged recursively.

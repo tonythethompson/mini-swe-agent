@@ -3,7 +3,7 @@
  *
  * Uses regex-based action parsing instead of tool calls. */
 import type { ChatCompletion } from "openai/resources/chat/completions.js";
-import { type Message, type EnvOutput, type Action } from "../index.js";
+import { type Message, type EnvOutput, type Action } from "../exceptions.js";
 import { LitellmModel } from "./litellm_model.js";
 import { parseRegexActions, formatObservationMessages } from "./utils/actions_text.js";
 
@@ -52,3 +52,5 @@ export class LitellmTextbasedModel extends LitellmModel {
     };
   }
 }
+
+

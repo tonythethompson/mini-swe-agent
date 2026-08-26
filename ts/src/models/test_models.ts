@@ -1,7 +1,8 @@
 /** Deterministic test models for testing.
  * Ported from src/minisweagent/models/test_models.py */
-import { type Model, type Message, type Action, type EnvOutput } from "../index.js";
-import { GLOBAL_MODEL_STATS } from "./index.js";
+import type { Model } from "../model_types.js";
+import { type Message, type Action, type EnvOutput } from "../exceptions.js";
+import { GLOBAL_MODEL_STATS } from "./global_stats.js";
 import { formatObservationMessages } from "./utils/actions_text.js";
 import { formatToolcallObservationMessages } from "./utils/actions_toolcall.js";
 import { expandMultimodalContent } from "./utils/multimodal.js";
@@ -123,3 +124,5 @@ export class DeterministicModel implements Model {
     };
   }
 }
+
+

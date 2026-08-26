@@ -1,8 +1,8 @@
 /** Requesty model (raw HTTP).
  * Ported from src/minisweagent/models/requesty_model.py */
-import { type Message, type Action, type EnvOutput } from "../index.js";
+import { type Message, type Action, type EnvOutput } from "../exceptions.js";
 import { FormatError } from "../exceptions.js";
-import { GLOBAL_MODEL_STATS } from "./index.js";
+import { GLOBAL_MODEL_STATS } from "./global_stats.js";
 import { BASH_TOOL, parseToolcallActions, formatToolcallObservationMessages } from "./utils/actions_toolcall.js";
 import { reorderAnthropicThinkingBlocks } from "./utils/anthropic_utils.js";
 import { setCacheControl } from "./utils/cache_control.js";
@@ -159,3 +159,5 @@ export class RequestyModel {
     return { info: { config: { model: this.config, model_type: "RequestyModel" } } };
   }
 }
+
+

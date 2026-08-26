@@ -1,7 +1,7 @@
 /** Convenience functions for selecting models.
  * Ported from src/minisweagent/models/__init__.py */
 import os from "node:os";
-import { type Model } from "../index.js";
+import type { Model } from "../model_types.js";
 import { LitellmModel } from "./litellm_model.js";
 import { LitellmTextbasedModel } from "./litellm_textbased_model.js";
 import { LitellmResponseModel } from "./litellm_response_model.js";
@@ -10,30 +10,7 @@ import { RequestyModel } from "./requesty_model.js";
 import { PortkeyModel } from "./portkey_model.js";
 import { DeterministicModel } from "./test_models.js";
 
-/** Global model statistics tracker with optional limits. */
-class GlobalModelStats {
-  private _cost = 0.0;
-  private _nCalls = 0;
-  costLimit = parseFloat(process.env.MSWEA_GLOBAL_COST_LIMIT ?? "0");
-  callLimit = parseInt(process.env.MSWEA_GLOBAL_CALL_LIMIT ?? "0", 10);
-
-  add(cost: number): void {
-    this._cost += cost;
-    this._nCalls += 1;
-    if ((this.costLimit > 0 && this.costLimit < this._cost) || (this.callLimit > 0 && this.callLimit < this._nCalls)) {
-      throw new Error(`Global cost/call limit exceeded: $${this._cost.toFixed(4)} / ${this._nCalls}`);
-    }
-  }
-
-  get cost(): number {
-    return this._cost;
-  }
-  get nCalls(): number {
-    return this._nCalls;
-  }
-}
-
-export const GLOBAL_MODEL_STATS = new GlobalModelStats();
+export { GLOBAL_MODEL_STATS } from "./global_stats.js";
 
 export function getModelName(
   inputModelName?: string | null,
@@ -81,3 +58,5 @@ export function getModel(inputModelName?: string | null, config?: Record<string,
   const instance = new modelClass(cfg);
   return instance;
 }
+
+

@@ -5,9 +5,10 @@
  * Provider routing is done via model name prefix (e.g. "anthropic/...", "openrouter/...")
  * and base_url / api_key env vars. */
 import { OpenAI } from "openai";
-import { type Model, type Message, type Action, type EnvOutput } from "../index.js";
+import type { Model } from "../model_types.js";
+import { type Message, type Action, type EnvOutput } from "../exceptions.js";
 import { FormatError } from "../exceptions.js";
-import { GLOBAL_MODEL_STATS } from "./index.js";
+import { GLOBAL_MODEL_STATS } from "./global_stats.js";
 import { logger } from "../utils/log.js";
 import { BASH_TOOL, parseToolcallActions, formatToolcallObservationMessages } from "./utils/actions_toolcall.js";
 import { reorderAnthropicThinkingBlocks } from "./utils/anthropic_utils.js";
@@ -228,3 +229,5 @@ export class LitellmModel implements Model {
     };
   }
 }
+
+
